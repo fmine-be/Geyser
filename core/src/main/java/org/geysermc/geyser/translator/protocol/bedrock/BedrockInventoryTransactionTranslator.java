@@ -465,6 +465,9 @@ public class BedrockInventoryTransactionTranslator extends PacketTranslator<Inve
                         PlayerAction action = session.getGameMode() == GameMode.CREATIVE ? PlayerAction.START_DIGGING : PlayerAction.FINISH_DIGGING;
                         ServerboundPlayerActionPacket breakPacket = new ServerboundPlayerActionPacket(action, packet.getBlockPosition(), Direction.VALUES[packet.getBlockFace()], sequence);
                         session.sendDownstreamGamePacket(breakPacket);
+
+                        // When canceling a block breaking event on the java server side, it does not update the item in the hand
+                        InventoryTranslator.PLAYER_INVENTORY_TRANSLATOR.updateSlot(session, session.getPlayerInventory(), session.getPlayerInventory().getOffsetForHotbar(packet.getHotbarSlot()));
                     }
                 }
                 break;
