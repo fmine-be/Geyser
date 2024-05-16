@@ -41,6 +41,7 @@ import org.cloudburstmc.protocol.bedrock.data.command.CommandPermission;
 import org.cloudburstmc.protocol.bedrock.data.entity.EntityDataTypes;
 import org.cloudburstmc.protocol.bedrock.data.entity.EntityFlag;
 import org.cloudburstmc.protocol.bedrock.data.entity.EntityLinkData;
+import org.cloudburstmc.protocol.bedrock.data.inventory.ItemData;
 import org.cloudburstmc.protocol.bedrock.packet.*;
 import org.geysermc.geyser.api.entity.type.player.GeyserPlayerEntity;
 import org.geysermc.geyser.entity.EntityDefinitions;
@@ -53,9 +54,11 @@ import org.geysermc.geyser.scoreboard.Score;
 import org.geysermc.geyser.scoreboard.Team;
 import org.geysermc.geyser.scoreboard.UpdateType;
 import org.geysermc.geyser.session.GeyserSession;
+import org.geysermc.geyser.session.cache.EntityCache;
 import org.geysermc.geyser.text.ChatColor;
 import org.geysermc.geyser.translator.text.MessageTranslator;
 import org.geysermc.geyser.util.ChunkUtils;
+import org.geysermc.mcprotocollib.network.Session;
 import org.geysermc.mcprotocollib.protocol.codec.NbtComponentSerializer;
 import org.geysermc.mcprotocollib.protocol.data.game.chat.numbers.BlankFormat;
 import org.geysermc.mcprotocollib.protocol.data.game.chat.numbers.FixedFormat;
@@ -132,14 +135,6 @@ public class PlayerEntity extends LivingEntity implements GeyserPlayerEntity {
         if (objective != null) {
             setBelowNameText(objective);
         }
-
-        // Entity send old flags https://github.com/GeyserMC/Geyser/issues/4430
-        setFlag(EntityFlag.SLEEPING, false);
-        setFlag(EntityFlag.SWIMMING, false);
-        setFlag(EntityFlag.SNEAKING, false);
-        setFlag(EntityFlag.SNEAKING, false);
-        setFlag(EntityFlag.ON_FIRE, false);
-        setDimensions(Pose.STANDING);
 
         // Update in case this entity has been despawned, then respawned
         this.nametag = this.username;
@@ -286,6 +281,17 @@ public class PlayerEntity extends LivingEntity implements GeyserPlayerEntity {
             return null;
         }
         return bedPosition;
+    }
+
+    @Override
+    public void despawnEntity() {
+        if (!valid) return;
+
+        // Entity send old flags https://github.com/GeyserMC/Geyser/issues/4430
+        flags.clear();
+        hand = ItemData.AIR;
+
+        super.despawnEntity();
     }
 
     public void setAbsorptionHearts(FloatEntityMetadata entityMetadata) {
