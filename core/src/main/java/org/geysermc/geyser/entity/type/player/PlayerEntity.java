@@ -133,6 +133,14 @@ public class PlayerEntity extends LivingEntity implements GeyserPlayerEntity {
             setBelowNameText(objective);
         }
 
+        // Entity send old flags https://github.com/GeyserMC/Geyser/issues/4430
+        setFlag(EntityFlag.SLEEPING, false);
+        setFlag(EntityFlag.SWIMMING, false);
+        setFlag(EntityFlag.SNEAKING, false);
+        setFlag(EntityFlag.SNEAKING, false);
+        setFlag(EntityFlag.ON_FIRE, false);
+        setDimensions(Pose.STANDING);
+
         // Update in case this entity has been despawned, then respawned
         this.nametag = this.username;
         // The name can't be updated later (the entity metadata for it is ignored), so we need to check for this now
