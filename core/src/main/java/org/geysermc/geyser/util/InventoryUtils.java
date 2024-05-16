@@ -56,6 +56,7 @@ import org.geysermc.mcprotocollib.protocol.data.game.entity.player.GameMode;
 import org.geysermc.mcprotocollib.protocol.data.game.item.ItemStack;
 import org.geysermc.mcprotocollib.protocol.data.game.item.component.DataComponents;
 import org.geysermc.mcprotocollib.protocol.data.game.recipe.Ingredient;
+import org.geysermc.mcprotocollib.protocol.packet.ingame.serverbound.inventory.ServerboundContainerClosePacket;
 import org.geysermc.mcprotocollib.protocol.packet.ingame.serverbound.inventory.ServerboundPickItemPacket;
 import org.geysermc.mcprotocollib.protocol.packet.ingame.serverbound.inventory.ServerboundSetCreativeModeSlotPacket;
 import org.jetbrains.annotations.Contract;
@@ -109,7 +110,10 @@ public class InventoryUtils {
                 inventory.setDisplayed(true);
             }
         } else {
-            session.setOpenInventory(null);
+            // The Java server doesn't know that we couldn't open the inventory, so we need to close it
+            ServerboundContainerClosePacket closeWindowPacket = new ServerboundContainerClosePacket(inventory.getJavaId());
+            session.sendDownstreamGamePacket(closeWindowPacket);
+            InventoryUtils.closeInventory(session, inventory.getJavaId(), false);
         }
     }
 
