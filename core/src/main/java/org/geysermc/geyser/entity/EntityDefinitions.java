@@ -297,6 +297,7 @@ public final class EntityDefinitions {
             TNT = EntityDefinition.inherited(TNTEntity::new, entityBase)
                     .type(EntityType.TNT)
                     .heightAndWidth(0.98f)
+                    .offset(0.49f)
                     .addTranslator(MetadataType.INT, TNTEntity::setFuseLength)
                     .build();
 
