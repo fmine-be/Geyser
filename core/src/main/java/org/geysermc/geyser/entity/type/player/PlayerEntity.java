@@ -169,6 +169,31 @@ public class PlayerEntity extends LivingEntity implements GeyserPlayerEntity {
         session.sendUpstreamPacket(addPlayerPacket);
     }
 
+    @Override
+    public void despawnEntity() {
+        super.despawnEntity();
+
+        // Since we re-use player entities: Clear flags, held item, etc
+        this.resetMetadata();
+        this.hand = ItemData.AIR;
+        this.offhand = ItemData.AIR;
+        this.boots = ItemData.AIR;
+        this.leggings = ItemData.AIR;
+        this.chestplate = ItemData.AIR;
+        this.helmet = ItemData.AIR;
+    }
+
+    public void resetMetadata() {
+        // Reset all metadata to their default values
+        // This is used when a player respawns
+        this.flags.clear();
+        this.initializeMetadata();
+
+        // Explicitly reset all metadata not handled by initializeMetadata
+        setParrot(null, true);
+        setParrot(null, false);
+    }
+
     public void sendPlayer() {
         if (session.getEntityCache().getPlayerEntity(uuid) == null)
             return;

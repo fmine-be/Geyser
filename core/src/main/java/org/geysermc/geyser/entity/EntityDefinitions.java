@@ -235,7 +235,7 @@ public final class EntityDefinitions {
                     .addTranslator(MetadataType.BOOLEAN,
                             (enderCrystalEntity, entityMetadata) -> enderCrystalEntity.setFlag(EntityFlag.SHOW_BOTTOM, ((BooleanEntityMetadata) entityMetadata).getPrimitiveValue())) // There is a base located on the ender crystal
                     .build();
-            EXPERIENCE_ORB = EntityDefinition.<ExpOrbEntity>inherited(null, entityBase)
+            EXPERIENCE_ORB = EntityDefinition.inherited(ExpOrbEntity::new, entityBase)
                     .type(EntityType.EXPERIENCE_ORB)
                     .identifier("minecraft:xp_orb")
                     .build();
