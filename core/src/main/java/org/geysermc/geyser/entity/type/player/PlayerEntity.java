@@ -308,17 +308,6 @@ public class PlayerEntity extends LivingEntity implements GeyserPlayerEntity {
         return bedPosition;
     }
 
-    @Override
-    public void despawnEntity() {
-        if (!valid) return;
-
-        // Entity send old flags https://github.com/GeyserMC/Geyser/issues/4430
-        flags.clear();
-        hand = ItemData.AIR;
-
-        super.despawnEntity();
-    }
-
     public void setAbsorptionHearts(FloatEntityMetadata entityMetadata) {
         // Extra hearts - is not metadata but an attribute on Bedrock
         UpdateAttributesPacket attributesPacket = new UpdateAttributesPacket();
