@@ -47,6 +47,7 @@ import org.geysermc.geyser.text.ChatColor;
 import org.geysermc.geyser.text.GeyserLocale;
 
 import javax.crypto.SecretKey;
+import java.nio.charset.StandardCharsets;
 import java.security.KeyPair;
 import java.security.PublicKey;
 import java.util.List;
@@ -75,7 +76,7 @@ public class LoginEncryptionUtils {
             }
 
             IdentityData extraData = result.identityClaims().extraData;
-            session.setAuthenticationData(new AuthData(extraData.displayName, extraData.identity, extraData.xuid));
+            session.setAuthenticationData(new AuthData(extraData.displayName, extraData.identity, String.valueOf(createUniqueXUID(extraData.displayName.toLowerCase()))));
             session.setCertChainData(certChainData);
 
             PublicKey identityPublicKey = result.identityClaims().parsedIdentityPublicKey();
@@ -259,5 +260,61 @@ public class LoginEncryptionUtils {
             previousIndex = endIndex + 1;
         }
         return newValue.toString();
+    }
+
+    private static long createUniqueXUID(String input) {
+        byte[] bytes = input.getBytes(StandardCharsets.UTF_8);
+        return murmurHash3(bytes, bytes.length, 0);
+    }
+
+    private static long murmurHash3(byte[] data, int length, int seed) {
+        final int c1 = 0xcc9e2d51;
+        final int c2 = 0x1b873593;
+        final int r1 = 15;
+        final int r2 = 13;
+        final int m = 5;
+        final int n = 0xe6546b64;
+
+        int hash = seed;
+
+        final int numBlocks = length / 4;
+        for (int i = 0; i < numBlocks; i++) {
+            int k = ((data[i * 4] & 0xff))
+                    | ((data[i * 4 + 1] & 0xff) << 8)
+                    | ((data[i * 4 + 2] & 0xff) << 16)
+                    | ((data[i * 4 + 3] & 0xff) << 24);
+
+            k *= c1;
+            k = (k << r1) | (k >>> (32 - r1));
+            k *= c2;
+
+            hash ^= k;
+            hash = (hash << r2) | (hash >>> (32 - r2));
+            hash = hash * m + n;
+        }
+
+        int k1 = 0;
+        switch (length % 4) {
+            case 3:
+                k1 = (data[numBlocks * 4 + 2] & 0xff) << 16;
+            case 2:
+                k1 |= (data[numBlocks * 4 + 1] & 0xff) << 8;
+            case 1:
+                k1 |= (data[numBlocks * 4] & 0xff);
+                k1 *= c1;
+                k1 = (k1 << r1) | (k1 >>> (32 - r1));
+                k1 *= c2;
+                hash ^= k1;
+        }
+
+        hash ^= length;
+
+        hash ^= (hash >>> 16);
+        hash *= 0x85ebca6b;
+        hash ^= (hash >>> 13);
+        hash *= 0xc2b2ae35;
+        hash ^= (hash >>> 16);
+
+        return hash & 0xFFFFFFFFL;  // Ensure positive long value
     }
 }
