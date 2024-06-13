@@ -87,19 +87,6 @@ public final class BlockRegistryPopulator {
     interface Remapper {
 
         NbtMap remap(NbtMap tag);
-
-        static Remapper of(BlockStateUpdater... updaters) {
-            CompoundTagUpdaterContext context = new CompoundTagUpdaterContext();
-            for (BlockStateUpdater updater : updaters) {
-                updater.registerUpdaters(context);
-            }
-
-            return tag -> {
-                NbtMapBuilder updated = context.update(tag, 0).toBuilder();
-                updated.remove("version"); // we already removed this, but the context adds it. remove it again.
-                return updated.build();
-            };
-        }
     }
 
     public static void populate(Stage stage) {
