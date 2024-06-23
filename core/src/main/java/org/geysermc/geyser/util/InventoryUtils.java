@@ -161,16 +161,16 @@ public class InventoryUtils {
         BedrockDimension dimension = session.getChunkCache().getBedrockDimension();
         int minY = dimension.minY(), maxY = minY + dimension.height();
         Vector3i flatPlayerPosition = session.getPlayerEntity().getPosition().toInt();
-        Vector3i position = flatPlayerPosition.add(Vector3i.UP);
+        Vector3i position = flatPlayerPosition.sub(0,3,0);
         if (position.getY() < minY) {
-            return null;
-        }
-        if (position.getY() >= maxY) {
-            position = flatPlayerPosition.sub(0, 4, 0);
-            if (position.getY() >= maxY) {
+            position = flatPlayerPosition.add(0, 3, 0);
+            if (position.getY() < minY) {
                 return null;
             }
+        }else if (position.getY() >= maxY) {
+            return null;
         }
+
         return position;
     }
 
