@@ -25,11 +25,6 @@
 
 package org.geysermc.geyser.entity;
 
-import org.geysermc.geyser.entity.type.living.monster.raid.RavagerEntity;
-import org.geysermc.mcprotocollib.protocol.data.game.entity.metadata.MetadataType;
-import org.geysermc.mcprotocollib.protocol.data.game.entity.metadata.type.BooleanEntityMetadata;
-import org.geysermc.mcprotocollib.protocol.data.game.entity.metadata.type.FloatEntityMetadata;
-import org.geysermc.mcprotocollib.protocol.data.game.entity.type.EntityType;
 import org.cloudburstmc.protocol.bedrock.data.entity.EntityDataTypes;
 import org.cloudburstmc.protocol.bedrock.data.entity.EntityFlag;
 import org.geysermc.geyser.entity.properties.GeyserEntityProperties;
@@ -44,13 +39,14 @@ import org.geysermc.geyser.entity.type.living.animal.tameable.WolfEntity;
 import org.geysermc.geyser.entity.type.living.merchant.AbstractMerchantEntity;
 import org.geysermc.geyser.entity.type.living.merchant.VillagerEntity;
 import org.geysermc.geyser.entity.type.living.monster.*;
-import org.geysermc.geyser.entity.type.living.monster.raid.PillagerEntity;
-import org.geysermc.geyser.entity.type.living.monster.raid.RaidParticipantEntity;
-import org.geysermc.geyser.entity.type.living.monster.raid.SpellcasterIllagerEntity;
-import org.geysermc.geyser.entity.type.living.monster.raid.VindicatorEntity;
+import org.geysermc.geyser.entity.type.living.monster.raid.*;
 import org.geysermc.geyser.entity.type.player.PlayerEntity;
 import org.geysermc.geyser.registry.Registries;
 import org.geysermc.geyser.translator.text.MessageTranslator;
+import org.geysermc.mcprotocollib.protocol.data.game.entity.metadata.MetadataType;
+import org.geysermc.mcprotocollib.protocol.data.game.entity.metadata.type.BooleanEntityMetadata;
+import org.geysermc.mcprotocollib.protocol.data.game.entity.metadata.type.FloatEntityMetadata;
+import org.geysermc.mcprotocollib.protocol.data.game.entity.type.EntityType;
 
 public final class EntityDefinitions {
     public static final EntityDefinition<AllayEntity> ALLAY;
@@ -301,11 +297,11 @@ public final class EntityDefinitions {
                     .addTranslator(MetadataType.INT, TNTEntity::setFuseLength)
                     .build();
 
-            EntityDefinition<Entity> displayBase = EntityDefinition.inherited(entityBase.factory(), entityBase)
+            EntityDefinition<DisplayBaseEntity> displayBase = EntityDefinition.inherited(DisplayBaseEntity::new, entityBase)
                     .addTranslator(null) // Interpolation delay
                     .addTranslator(null) // Transformation interpolation duration
                     .addTranslator(null) // Position/Rotation interpolation duration
-                    .addTranslator(null) // Translation
+                    .addTranslator(MetadataType.VECTOR3, DisplayBaseEntity::setTranslation) // Translation
                     .addTranslator(null) // Scale
                     .addTranslator(null) // Left rotation
                     .addTranslator(null) // Right rotation
