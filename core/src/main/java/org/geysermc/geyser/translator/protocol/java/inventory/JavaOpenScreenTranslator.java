@@ -26,6 +26,7 @@
 package org.geysermc.geyser.translator.protocol.java.inventory;
 
 import net.kyori.adventure.text.Component;
+import org.geysermc.geyser.GeyserImpl;
 import org.geysermc.geyser.inventory.Inventory;
 import org.geysermc.geyser.session.GeyserSession;
 import org.geysermc.geyser.translator.inventory.InventoryTranslator;
@@ -79,10 +80,6 @@ public class JavaOpenScreenTranslator extends PacketTranslator<ClientboundOpenSc
             if (openInventory.getContainerType() != packet.getType() || !openInventory.getTitle().equals(name)) {
                 // Sometimes the server can double-open an inventory with the same ID - don't confirm in that instance.
                 InventoryUtils.closeInventory(session, openInventory.getJavaId(), openInventory.getJavaId() != packet.getContainerId());
-            } else if (session.getInventoryTranslator() != null) {
-                // If you open many containers next to each other at the same time, then there are blocks of old containers
-                session.getInventoryTranslator().closeInventory(session, openInventory);
-                InventoryUtils.closeInventory(session, openInventory.getJavaId(), false);
             }
         }
 

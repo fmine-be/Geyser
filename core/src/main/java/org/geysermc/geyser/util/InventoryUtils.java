@@ -92,7 +92,7 @@ public class InventoryUtils {
 
     public static void displayInventory(GeyserSession session, Inventory inventory) {
         InventoryTranslator translator = session.getInventoryTranslator();
-        if (translator != null && translator.prepareInventory(session, inventory)) {
+        if (translator.prepareInventory(session, inventory)) {
             if (translator instanceof DoubleChestInventoryTranslator && !((Container) inventory).isUsingRealBlock()) {
                 session.scheduleInEventLoop(() -> {
                     Inventory openInv = session.getOpenInventory();
@@ -111,10 +111,11 @@ public class InventoryUtils {
                 inventory.setDisplayed(true);
             }
         } else {
-            // The Java server doesn't know that we couldn't open the inventory, so we need to close it
-            ServerboundContainerClosePacket closeWindowPacket = new ServerboundContainerClosePacket(inventory.getJavaId());
-            session.sendDownstreamGamePacket(closeWindowPacket);
-            InventoryUtils.closeInventory(session, inventory.getJavaId(), false);
+            // Can occur if we e.g. did not find a spot to put a fake container in
+            ServerboundContainerClosePacket closePacket = new ServerboundContainerClosePacket(inventory.getJavaId());
+            session.sendDownstreamGamePacket(closePacket);
+            session.setOpenInventory(null);
+            session.setInventoryTranslator(InventoryTranslator.PLAYER_INVENTORY_TRANSLATOR);
         }
     }
 
