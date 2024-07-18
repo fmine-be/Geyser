@@ -92,7 +92,7 @@ public class InventoryUtils {
 
     public static void displayInventory(GeyserSession session, Inventory inventory) {
         InventoryTranslator translator = session.getInventoryTranslator();
-        if (translator != null && translator.prepareInventory(session, inventory)) {
+        if (translator.prepareInventory(session, inventory)) {
             if (translator instanceof DoubleChestInventoryTranslator && !((Container) inventory).isUsingRealBlock()) {
                 session.scheduleInEventLoop(() -> {
                     Inventory openInv = session.getOpenInventory();
@@ -251,6 +251,12 @@ public class InventoryUtils {
         return protocolVersion -> ItemData.builder()
                 .definition(Registries.ITEMS.forVersion(protocolVersion).getStoredItems().upgradeTemplate().getBedrockDefinition())
                 .count(1).build();
+    }
+
+    public static IntFunction<ItemData> getTotemOfUndying() {
+        return protocolVersion -> ItemData.builder()
+            .definition(Registries.ITEMS.forVersion(protocolVersion).getStoredItems().totem().getBedrockDefinition())
+            .count(1).build();
     }
 
     /**
