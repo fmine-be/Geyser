@@ -38,8 +38,7 @@ import java.util.Map;
 /**
  * Sound interaction handler for when a block is right-clicked.
  */
-public interface BlockSoundInteractionTranslator extends SoundInteractionTranslator<String> {
-
+public interface BlockSoundInteractionTranslator extends SoundInteractionTranslator<BlockState> {
     /**
      * Handles the block interaction when a player
      * right-clicks a block.
