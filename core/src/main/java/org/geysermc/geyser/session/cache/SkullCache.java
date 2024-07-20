@@ -50,9 +50,9 @@ import java.util.*;
 public class SkullCache {
     private final int maxVisibleSkulls;
     private final boolean cullingEnabled;
-    
+
     private final int skullRenderDistanceSquared;
-    
+
     /**
      * The time in milliseconds before unused skull entities are despawned
      */
@@ -243,8 +243,16 @@ public class SkullCache {
     }
 
     public void clear() {
+        for (Skull skull : skulls.values()) {
+            if (skull.entity != null) {
+                skull.entity.despawnEntity();
+            }
+        }
         skulls.clear();
         inRangeSkulls.clear();
+        for (SkullPlayerEntity skull : unusedSkullEntities) {
+            skull.despawnEntity();
+        }
         unusedSkullEntities.clear();
         totalSkullEntities = 0;
         lastPlayerPosition = null;
