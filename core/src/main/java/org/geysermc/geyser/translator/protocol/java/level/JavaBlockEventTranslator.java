@@ -79,7 +79,7 @@ public class JavaBlockEventTranslator extends PacketTranslator<ClientboundBlockE
                 // See https://github.com/PaperMC/Paper/blob/6fa1983e9ce177a4a412d5b950fd978620174777/patches/server/0304-Fire-BlockPistonRetractEvent-for-all-empty-pistons.patch
                 if (action == PistonValueType.PULLING || action == PistonValueType.CANCELLED_MID_PUSH) {
                     BlockState pistonBlock = session.getGeyser().getWorldManager().blockAt(session, position);
-                    if (!pistonBlock.is(Blocks.STICKY_PISTON)) {
+                    if (!isSticky(pistonBlock)) {
                         return;
                     }
                     if (action != PistonValueType.CANCELLED_MID_PUSH) {
@@ -98,7 +98,7 @@ public class JavaBlockEventTranslator extends PacketTranslator<ClientboundBlockE
             } else {
                 PistonBlockEntity blockEntity = pistonCache.getPistons().computeIfAbsent(position, pos -> {
                     BlockState state = session.getGeyser().getWorldManager().blockAt(session, position);
-                    boolean sticky = state.is(Blocks.STICKY_PISTON);
+                    boolean sticky = isSticky(state);
                     boolean extended = action != PistonValueType.PUSHING;
                     return new PistonBlockEntity(session, pos, direction, sticky, extended);
                 });
@@ -127,5 +127,10 @@ public class JavaBlockEventTranslator extends PacketTranslator<ClientboundBlockE
             blockEntityPacket.setData(builder.build());
             session.sendUpstreamPacket(blockEntityPacket);
         }
+    }
+
+
+    private static boolean isSticky(BlockState state) {
+        return state.is(Blocks.STICKY_PISTON) || (state.is(Blocks.MOVING_PISTON) && "sticky".equals(state.getValue(Properties.PISTON_TYPE)));
     }
 }
