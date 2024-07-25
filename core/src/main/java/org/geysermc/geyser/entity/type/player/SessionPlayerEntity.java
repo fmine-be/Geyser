@@ -62,6 +62,11 @@ public class SessionPlayerEntity extends PlayerEntity {
     @Getter
     protected final Map<GeyserAttributeType, AttributeData> attributes = new Object2ObjectOpenHashMap<>();
     /**
+     * Java-only attribute
+     */
+    @Getter
+    private double blockInteractionRange = GeyserAttributeType.BLOCK_INTERACTION_RANGE.getDefaultValue();
+    /**
      * Used in PlayerInputTranslator for movement checks.
      */
     @Getter
@@ -205,6 +210,8 @@ public class SessionPlayerEntity extends PlayerEntity {
     protected void updateAttribute(Attribute javaAttribute, List<AttributeData> newAttributes) {
         if (javaAttribute.getType() == AttributeType.Builtin.GENERIC_ATTACK_SPEED) {
             session.setAttackSpeed(AttributeUtils.calculateValue(javaAttribute));
+        } else if (javaAttribute.getType() == AttributeType.Builtin.PLAYER_BLOCK_INTERACTION_RANGE) {
+            this.blockInteractionRange = AttributeUtils.calculateValue(javaAttribute);
         } else {
             super.updateAttribute(javaAttribute, newAttributes);
         }
@@ -265,6 +272,7 @@ public class SessionPlayerEntity extends PlayerEntity {
     public void resetAttributes() {
         attributes.clear();
         maxHealth = GeyserAttributeType.MAX_HEALTH.getDefaultValue();
+        blockInteractionRange = GeyserAttributeType.BLOCK_INTERACTION_RANGE.getDefaultValue();
 
         UpdateAttributesPacket attributesPacket = new UpdateAttributesPacket();
         attributesPacket.setRuntimeEntityId(geyserId);
